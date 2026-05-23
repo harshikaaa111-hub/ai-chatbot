@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harshika's AI Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #fce7f3; /* Soft Light Pink Background */
+            --chat-bg: #ffffff; /* Clean White Chat Box */
+            --text-main: #1e293b; /* Dark text for readability */
+            --user-msg: #db2777; /* Deep Pink for User Messages */
+            --bot-msg: #f3f4f6; /* Light Gray for Bot Messages */
+            --input-bg: #f9fafb; /* Off-white for input */
+            --accent: #fbcfe8; /* Soft pink accent */
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 85vh;
+            background-color: var(--chat-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(219, 39, 119, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #fbcfe8;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #ec4899, #db2777); /* Beautiful Pink Gradient */
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            border-bottom: 1px solid #fbcfe8;
+        }
+
+        .chat-header i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chat-header p {
+            margin: 0;
+            font-size: 12px;
+            color: #fce7f3;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background-color: var(--user-msg);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot-message {
+            background-color: var(--bot-msg);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: var(--bot-msg);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #6b7280;
+            font-size: 14px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .typing-dots span {
+            animation: blink 1.4s infinite both;
+            display: inline-block;
+            font-size: 18px;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: .2s; }
+        .typing-dots span:nth-child(3) { animation-delay: .4s; }
+
+        @keyframes blink {
+            0% { opacity: .2; }
+            20% { opacity: 1; }
+            100% { opacity: .2; }
+        }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            background-color: #fff5f5;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #fbcfe8;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background-color: var(--chat-bg);
+            border: 1px solid #fbcfe8;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--user-msg);
+        }
+
+        .chat-input-area button {
+            background-color: var(--user-msg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .chat-input-area button:hover {
+            background-color: #be185d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <i class="fa-solid fa-robot"></i>
+            <div>
+                <h2>Harshika's AI Assistant</h2>
+                <p><i class="fa-solid fa-circle" style="color: #22c55e; font-size: 8px;"></i> Powered by Gemini AI</p>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-box">
+            <div class="message bot-message">
+                Hello Harshika! I am your newly developed AI Assistant. How can I help you today? 😊
+            </div>
+            <div class="typing-indicator" id="typing">
+                AI is thinking<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const inputField = document.getElementById("user-input");
+            const messageText = inputField.value.trim();
+            if (messageText === "") return;
+
+            // User Message Display
+            const chatBox = document.getElementById("chat-box");
+            const typingIndicator = document.getElementById("typing");
+            
+            const userDiv = document.createElement("div");
+            userDiv.className = "message user-message";
+            userDiv.innerText = messageText;
+            chatBox.insertBefore(userDiv, typingIndicator);
+
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Show Typing Indicator
+            typingIndicator.style.display = "block";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Fetch request to backend
+            fetch("/get?msg=" + encodeURIComponent(messageText))
+                .then(response => response.text())
+                .then(data => {
+                    // Hide Typing Indicator
+                    typingIndicator.style.display = "none";
+
+                    // Bot Message Display
+                    const botDiv = document.createElement("div");
+                    botDiv.className = "message bot-message";
+                    botDiv.innerText = data;
+                    chatBox.insertBefore(botDiv, typingIndicator);
+                    
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                })
+                .catch(error => {
+                    typingIndicator.style.display = "none";
+                    console.error("Error:", error);
+                });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
